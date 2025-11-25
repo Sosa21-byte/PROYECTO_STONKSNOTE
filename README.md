@@ -790,3 +790,147 @@ streamlit run streamlit_app.py    # Solo objetos
 ![Imagen de WhatsApp 2025-11-25 a las 00 46 19_a65e1626](https://github.com/user-attachments/assets/23de9b02-1a2f-4309-861f-1bf05fa3e10c)
 ![Imagen de WhatsApp 2025-11-25 a las 00 46 47_59b81089](https://github.com/user-attachments/assets/340b2017-ebed-48ad-8982-e486a370b3f7)
 
+
+# Subir la imagen a Docker Hub
+
+Este README explica **paso a paso** cómo construir, etiquetar y subir la imagen Docker de la app *CamGrabber* al repositorio **sosabyte21/camgrabber**. Al final hay comandos de verificación y soluciones rápidas a errores comunes.
+
+---
+
+## Requisitos
+
+* Tener Docker instalado y funcionando (Docker Desktop o Docker Engine).
+* Acceso a la cuenta de Docker Hub `sosabyte21`.
+* (Opcional) Un token de acceso personal de Docker Hub con permisos **Public Repo — Read/Write**.
+
+---
+
+## Estructura del proyecto (ejemplo)
+
+```
+/tu-proyecto
+ ├── Dockerfile
+ ├── .dockerignore
+ ├── requirements.txt
+ ├── streamlit_app.py
+ ├── modelo_simple.pkl
+ └── etl/
+      └── labels.json
+```
+
+---
+
+## 1. Construir la imagen localmente
+
+Desde la carpeta raíz del proyecto (donde está el `Dockerfile`):
+
+```bash
+docker build -t camgrabber-app .
+```
+
+Explicación: esto crea una imagen local llamada `camgrabber-app:latest`.
+
+---
+
+## 2. Etiquetar (tag) la imagen con tu namespace en Docker Hub
+
+Docker Hub usa el formato `usuario/repo:tag`. Para publicar en `sosabyte21/camgrabber` ejecuta:
+
+```bash
+docker tag camgrabber-app sosabyte21/camgrabber:latest
+```
+
+Verifica con:
+
+```bash
+docker images
+# Debe salir: sosabyte21/camgrabber   latest   <IMAGE ID>
+```
+
+---
+
+## 3. Login en Docker CLI (con token)
+
+**IMPORTANTE:** si tienes 2FA o no recuerdas tu contraseña, crea un *Personal Access Token* en Docker Hub y úsalo como "contraseña".
+
+1. En Docker Hub: `Settings` → `Security` → `New Access Token`.
+2. Dale nombre (ej. `cli-camgrabber`) y permisos **Public Repo — Read/Write**.
+3. Copia el token (solo aparece una vez).
+
+Luego en la terminal:
+
+```bash
+docker logout
+docker login -u sosabyte21
+```
+
+Cuando te pida la contraseña pega el token.
+
+Salida esperada:
+
+```
+Login Succeeded
+```
+
+---
+
+## 4. Subir (push) la imagen
+
+```bash
+docker push sosabyte21/camgrabber:latest
+```
+
+Salida exitosa: verás cómo suben las capas y al final una línea similar a:
+
+```
+latest: digest: sha256:... size: ...
+```
+
+---
+
+## 5. Verificar que la imagen está en Docker Hub
+
+### Opción A — Web
+
+Ir a: `https://hub.docker.com/repositories/sosabyte21` y abrir `camgrabber`. Debes ver la tag `latest` y la fecha del push.
+
+### Opción B — CLI
+
+Desde cualquier máquina (o la misma):
+
+```bash
+docker pull sosabyte21/camgrabber:latest
+```
+
+
+---
+
+## Resumen de comandos (lista rápida)
+
+```bash
+# 1. Construir
+docker build -t camgrabber-app .
+
+# 2. Tag
+docker tag camgrabber-app sosabyte21/camgrabber:latest
+
+# 3. Login (usar token como password)
+docker logout
+docker login -u sosabyte21
+
+# 4. Push
+docker push sosabyte21/camgrabber:latest
+
+# 5. Verificar (pull)
+docker pull sosabyte21/camgrabber:latest
+
+# 6. Ejecutar localmente
+docker run -p 8501:8501 sosabyte21/camgrabber:latest
+```
+
+---
+
+
+https://hub.docker.com/repository/docker/sosabyte21/camgrabber/general
+![Imagen de WhatsApp 2025-11-25 a las 01 39 54_00e29d66](https://github.com/user-attachments/assets/3f8383e8-9ef0-4219-9b48-9f01b78bdbbe)
+![Imagen de WhatsApp 2025-11-25 a las 01 39 43_d00c8f7b](https://github.com/user-attachments/assets/05e11f92-d1e1-40a8-aa51-646ac3abc92e)
